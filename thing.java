@@ -1,77 +1,118 @@
+//subsequences summing to seven
 import java.util.*;
 import java.lang.*;
 import java.io.*;
 public class thing {
-    static Kattio io = new Kattio();
+    static class mountain implements Comparable<mountain>{
+        int a, b;
+        public mountain(int _a, int _b){
+            a = _a;
+            b = _b;
+        }
+        public int compareTo(mountain a){
+            if(a.a == this.a){
+                return Integer.compare(a.b, this.b);
+            }
+            return Integer.compare(a.a, this.a);
+        }
+    }
+    //static Kattio io = new Kattio();
+    static Kattio io;
+   static {
+       try {
+           io = new Kattio("angry");
+       } catch(IOException e) {}
+   }
+
+
     static ArrayList<Integer> adj[];
     static boolean visited[];
     static int dist[];
     /*
     SAMPLE CASE
-    5 6
-    0 1
-    0 3
-    0 2
-    1 3
-    2 3
-    3 4
+5 8
+4
+7
+8
+6
+4
+
      */
+    static int k;
+    static int[] locations;
     public static void main(String[] args){
-        // do BFS, see where the furthest node is;
-        //subsequently, do BFS again to find furthest node from that point
-        //multiply by 3 to get answer
-
         int n = io.nextInt();
-        int m = io.nextInt();
-        adj = new ArrayList[n];
-        dist = new int[n];
-        visited = new boolean[n];
-        for(int i =0;i<adj.length;i++){
-            adj[i] = new ArrayList<>();
+        k = io.nextInt();
+        locations = new int[n];
+        for(int i =0;i<n;i++){
+            locations[i] = io.nextInt();
         }
 
-        for(int i = 0;i<m;i++){
-            int a= io.nextInt();
-            int b = io.nextInt();
-            adj[a].add(b);
-            adj[b].add(a);
+        int min = 1;
+        int max = 50000;
+        //max = n/k;
+        Arrays.sort(locations);
+        while(min != max) {
+            int mid = (min+max)/2;
+            if(possible(locations, mid, k,dist)) {
+                max = mid;
+            }
+            else {
+                min = mid+1;
+            }
         }
-        bfs(0);
-        for(int num: dist){
-            io.println(num + " " );
-        }
-        io.println("\n\n\n\n");
-        dfs(0);
+        io.println(min);
 
-        //run BFS
 
         io.close();
     }
+    //given a size of a subarray, is it possible to use this size
+    public static boolean possible(int[] l, int r, int k,int[] dist) {
+
+        int used = 0;
+        int last = 0;
+        while(last < l.length) {
+            used++;
+            int curr = last+1;
+            while(curr < l.length && locations[curr] - locations[last] <= 2*r) {
+                curr++;
+            }
+            last = curr;
+        }
+        if(used <= k) {
+            return true;
+        }
+        return false;
+    }
+
+
+
+
+
 
     static void bfs(int k){
-        //b
+        //bfs
         Arrays.fill(dist, -1); // fill distance array with -1's
         Queue<Integer> q = new LinkedList<Integer>();
         dist[k] = 0;
         q.add(k);
         while(!q.isEmpty()){
             int v = q.poll();
-            io.println("visiting" + v);
             for(int e : adj[v]){
                 //if unmarked
+
+
                 if(dist[e] == -1){
                     //marking e
-                    io.println("going through unvisited neighbors of " +v + " and found " + e);
                     dist[e] = dist[v] + 1;
                     q.add(e);
-                    io.println(q);
+
                 }
             }
         }
     }
     public static void dfs(int node)
     {
-        io.println("visiting node " + node);
         visited[node] = true;
         //going through all neighbors of node
 
