@@ -16,13 +16,15 @@ public class thing {
             return Integer.compare(a.a, this.a);
         }
     }
-    //static Kattio io = new Kattio();
-    static Kattio io;
+    static Kattio io = new Kattio();
+    /*static Kattio io;
    static {
        try {
            io = new Kattio("angry");
        } catch(IOException e) {}
    }
+
+     */
 
 
     static ArrayList<Integer> adj[];
@@ -30,31 +32,28 @@ public class thing {
     static int dist[];
     /*
     SAMPLE CASE
-5 8
-4
-7
-8
-6
-4
+6 3 2
+1 1 10 14 4 3
 
      */
-    static int k;
-    static int[] locations;
+    static int N;
+    static int numBus;
+    static int cap;
+    static int[] cow;
     public static void main(String[] args){
-        int n = io.nextInt();
-        k = io.nextInt();
-        locations = new int[n];
-        for(int i =0;i<n;i++){
-            locations[i] = io.nextInt();
+        N=io.nextInt();
+        numBus= io.nextInt();
+        cap= io.nextInt();
+        cow = new int[N];
+        for(int i =0;i<N;i++){
+            cow[i] = io.nextInt();
         }
-
-        int min = 1;
-        int max = 50000;
-        //max = n/k;
-        Arrays.sort(locations);
+        Arrays.sort(cow);
+        int min = 0;
+        int max = (int)1e9;
         while(min != max) {
             int mid = (min+max)/2;
-            if(possible(locations, mid, k,dist)) {
+            if(possible( mid)) {
                 max = mid;
             }
             else {
@@ -63,26 +62,20 @@ public class thing {
         }
         io.println(min);
 
-
         io.close();
     }
     //given a size of a subarray, is it possible to use this size
-    public static boolean possible(int[] l, int r, int k,int[] dist) {
-
-        int used = 0;
-        int last = 0;
-        while(last < l.length) {
-            used++;
-            int curr = last+1;
-            while(curr < l.length && locations[curr] - locations[last] <= 2*r) {
-                curr++;
+    public static boolean possible(int minWait) {
+        int first = cow[0]; int used = 1; int curCap = 0;
+        for (int i = 0; i < N; i++) {
+            if(cow[i]-first>minWait || curCap >= cap){
+                used++;
+                curCap=0;
+                first = cow[i];
             }
-            last = curr;
+            curCap++;
         }
-        if(used <= k) {
-            return true;
-        }
-        return false;
+        return used <= numBus;
     }
 
 
